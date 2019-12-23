@@ -8,8 +8,17 @@
 
 #include <stdio.h>
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
+void GreedyColoring();
+
+int main() {
+    GreedyColoring();
     return 0;
+}
+
+void GreedyColoring() {
+    int k;
+    printf("Please input k\n");
+    scanf("%d", &k);
+    
+    
 }

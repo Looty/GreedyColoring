@@ -23,6 +23,7 @@ void GreedyColoring(void);
 int partition(IntArray arr, int low, int high);
 void swap(Interval* a, Interval* b);
 void quickSort(IntArray arr, int low, int high);
+void secondSort(IntArray arr);
 void printInterval(IntArray a, int i);
 void printIntervalFamily(IntArray);
 int calculateEdges(IntArray a);
@@ -43,7 +44,7 @@ void GreedyColoring(void) {
     // initialize
     IntArray ints;
     ints.n = k;
-    ints.intervals = (Interval*) malloc(ints.n * sizeof(int));
+    ints.intervals = (Interval*) malloc(ints.n * sizeof(Interval));
     
     printf("You will now be asked to insert a family of %d intervals:\n", k);
     for(int i = 0; i < k; i++) {
@@ -107,6 +108,53 @@ void quickSort(IntArray arr, int low, int high)
         // partition and after partition
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
+    }
+}
+
+// [0,5],[1,2],[1,3],[3,4],[3,5],[3,9],[3,10],[8,11]
+// 0 -> 1
+// 1 -> 2
+// 3 -> 4
+// 8 -> 1
+void secondSort(IntArray arr) {
+    int pivot = 0;
+    int foundFirst = 1;
+    int arrLength = 1;
+    int currNum = arr.intervals[0].begin;
+    IntArray tempInt;
+
+    for(int i = 1; i < arr.n; i++) {
+        if(arr.intervals[i].begin == currNum) {
+        
+            if(!foundFirst) {
+                foundFirst = 1;
+                pivot = i-1;
+            }
+
+            arrLength++;
+            
+        } else {
+            if(arrLength > 1) {
+                // create temp interval
+                int iterator = pivot;
+                tempInt.n = arrLength;
+                tempInt.intervals = (Interval*) malloc(tempInt.n * sizeof(Interval));
+                
+                // insert to temp interval
+                for(int i = 0; i < tempInt.n; i++)
+                    tempInt.intervals[i] = arr.intervals[iterator++];
+
+                quickSort(tempInt, 0, tempInt.n-1);
+                
+                // fix main interval array via temp interval
+                
+            }
+            
+            currNum = arr.intervals[i].begin;
+            arrLength = 1;
+            foundFirst = 0;
+            pivot = -1;
+        }
     }
 }
 

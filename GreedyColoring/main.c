@@ -17,7 +17,7 @@ typedef struct {
     int end;
     int deg; //NIL
     int color;
-    struct Interval* next;
+    struct Interval* neighbors;
 } Interval;
 
 typedef struct {
@@ -64,8 +64,8 @@ void GreedyColoring(void) {
         ints.intervals[i].begin = b;
         ints.intervals[i].end = e;
         ints.intervals[i].deg = ZERO;
-        ints.intervals[i].next = (struct Interval*) malloc(sizeof(Interval));
-        ints.intervals[i].color = ZERO;
+        ints.intervals[i].neighbors = NULL;
+        ints.intervals[i].color = 1;
         
         printf("%dth Interval: %d %d\n", i, b, e);
     }
@@ -135,22 +135,42 @@ void swap(Interval* a, Interval* b)
 }
 
 void InitializeGraph(IntArray a) {
+    int edges = 0;
+    int minDeg = 0;
+    int maxDeg = 0;
+    int currNeigh = 0;
+    
+    int minColor = 1;
+    int chromeNum = 0;
+    
     for(int i = 0; i < a.n; i++) {
         for(int j=i+1; j < a.n; j++) {
             if(a.intervals[i].end >= a.intervals[j].begin) {
-                a.intervals[i].deg++;
-                a.intervals[i].color++;
-                //a.intervals[i].next = a.intervals[j];
-                //printf("EDGE: [%d,%d] -> [%d,%d]\n", a.intervals[i].begin, a.intervals[i].end, a.intervals[j].begin, a.intervals[j].end);
+                edges++;
+                currNeigh++;
+
+                minDeg = ++a.intervals[i].deg;
+                ++a.intervals[j].deg;
+                a.intervals[i].color = minColor;
+
+                //a.intervals[i].color++;
+                       
+                a.intervals[i].neighbors = (struct Interval*) malloc(currNeigh * sizeof(Interval));
+                printf("EDGE: [%d,%d] -> [%d,%d]\n", a.intervals[i].begin, a.intervals[i].end, a.intervals[j].begin, a.intervals[j].end);
             }
         }
+ 
+        if(maxDeg < a.intervals[i].deg)
+            maxDeg = a.intervals[i].deg;
+            
+        currNeigh = 0;
     }
 }
 /*
  typedef struct {
-     int begin;
-     int end;
-     int deg; //NIL
+     int begin; v
+     int end; v
+     int deg; v
      int color;
      struct Interval* next;
  } Interval;

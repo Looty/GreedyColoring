@@ -9,26 +9,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Intervals {
+#define NIL    -1
+#define ZERO    0
+
+typedef struct {
     int begin;
     int end;
+    int deg; //NIL
+    int color;
+    struct Interval* next;
 } Interval;
 
-typedef struct IntervalArray {
+typedef struct {
     Interval* intervals;
     int n;
+    int edges; // ZERO
+    int minDeg; // ZERO
+    int maxDeg; // ZERO
+    int chromeNum; // ZERO
 } IntArray;
 
 void GreedyColoring(void);
 int partition(IntArray arr, int low, int high);
 void swap(Interval* a, Interval* b);
 void quickSort(IntArray arr, int low, int high);
-void secondSort(IntArray arr);
 void printInterval(IntArray a, int i);
 void printIntervalFamily(IntArray);
+void InitializeGraph(IntArray);
 int calculateEdges(IntArray a);
-int maxDegree(IntArray a);
-int maxDegree(IntArray a);
 
 int main() {
     GreedyColoring();
@@ -45,6 +53,7 @@ void GreedyColoring(void) {
     IntArray ints;
     ints.n = k;
     ints.intervals = (Interval*) malloc(ints.n * sizeof(Interval));
+    ints.minDeg = ints.maxDeg = ints.edges = ints.chromeNum = ZERO;
     
     printf("You will now be asked to insert a family of %d intervals:\n", k);
     for(int i = 0; i < k; i++) {
@@ -54,16 +63,17 @@ void GreedyColoring(void) {
         // initialize per interval
         ints.intervals[i].begin = b;
         ints.intervals[i].end = e;
+        ints.intervals[i].deg = ZERO;
+        ints.intervals[i].next = (struct Interval*) malloc(sizeof(Interval));
+        ints.intervals[i].color = ZERO;
         
         printf("%dth Interval: %d %d\n", i, b, e);
     }
-    
-    printf("Sorting...\n");
+
     quickSort(ints, 0, ints.n-1);
-    printf("After sort...\n");
     printIntervalFamily(ints);
     
-    printf("G Edges = %d\n", calculateEdges(ints));
+    //printf("G Edges = %d\n", calculateEdges(ints));
 }
 
 void printIntervalFamily(IntArray a) {
@@ -116,47 +126,6 @@ void quickSort(IntArray arr, int low, int high)
 // 1 -> 2
 // 3 -> 4
 // 8 -> 1
-void secondSort(IntArray arr) {
-    int pivot = 0;
-    int foundFirst = 1;
-    int arrLength = 1;
-    int currNum = arr.intervals[0].begin;
-    IntArray tempInt;
-
-    for(int i = 1; i < arr.n; i++) {
-        if(arr.intervals[i].begin == currNum) {
-        
-            if(!foundFirst) {
-                foundFirst = 1;
-                pivot = i-1;
-            }
-
-            arrLength++;
-            
-        } else {
-            if(arrLength > 1) {
-                // create temp interval
-                int iterator = pivot;
-                tempInt.n = arrLength;
-                tempInt.intervals = (Interval*) malloc(tempInt.n * sizeof(Interval));
-                
-                // insert to temp interval
-                for(int i = 0; i < tempInt.n; i++)
-                    tempInt.intervals[i] = arr.intervals[iterator++];
-
-                quickSort(tempInt, 0, tempInt.n-1);
-                
-                // fix main interval array via temp interval
-                
-            }
-            
-            currNum = arr.intervals[i].begin;
-            arrLength = 1;
-            foundFirst = 0;
-            pivot = -1;
-        }
-    }
-}
 
 void swap(Interval* a, Interval* b)
 {
@@ -165,17 +134,33 @@ void swap(Interval* a, Interval* b)
     *b = t;
 }
 
-int calculateEdges(IntArray a) {
-    int c = 0;
-    
+void InitializeGraph(IntArray a) {
     for(int i = 0; i < a.n; i++) {
         for(int j=i+1; j < a.n; j++) {
             if(a.intervals[i].end >= a.intervals[j].begin) {
-                c++;
+                a.intervals[i].deg++;
+                a.intervals[i].color++;
+                //a.intervals[i].next = a.intervals[j];
                 //printf("EDGE: [%d,%d] -> [%d,%d]\n", a.intervals[i].begin, a.intervals[i].end, a.intervals[j].begin, a.intervals[j].end);
             }
         }
     }
-
-    return c;
 }
+/*
+ typedef struct {
+     int begin;
+     int end;
+     int deg; //NIL
+     int color;
+     struct Interval* next;
+ } Interval;
+ 
+ typedef struct {
+     Interval* intervals;
+     int n;
+     int edges; // ZERO
+     int minDeg; // ZERO
+     int maxDeg; // ZERO
+     int chromeNum; // ZERO
+ } IntArray;
+ */

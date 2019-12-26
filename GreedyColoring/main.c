@@ -50,10 +50,10 @@ void GreedyColoring(void) {
     scanf("%d", &k);
     
     // initialize
-    IntArray ints;
-    ints.n = k;
-    ints.intervals = (Interval*) malloc(ints.n * sizeof(Interval));
-    ints.minDeg = ints.maxDeg = ints.edges = ints.chromeNum = ZERO;
+    IntArray* ints;
+    ints->n = k;
+    ints->intervals = (Interval*) malloc(ints->n * sizeof(Interval*));
+    ints->minDeg = ints->maxDeg = ints->edges = ints->chromeNum = ZERO;
     
     printf("You will now be asked to insert a family of %d intervals:\n", k);
     for(int i = 0; i < k; i++) {
@@ -61,22 +61,22 @@ void GreedyColoring(void) {
         scanf("%d", &e);
         
         // initialize per interval
-        ints.intervals[i].begin = b;
-        ints.intervals[i].end = e;
-        ints.intervals[i].deg = ZERO;
-        ints.intervals[i].next = (struct Interval*) malloc(sizeof(Interval));
-        ints.intervals[i].color = ZERO;
+        ints->intervals[i].begin = b;
+        ints->intervals[i].end = e;
+        ints->intervals[i].deg = ZERO;
+        ints->intervals[i].next = (struct Interval*) malloc(sizeof(Interval));
+        ints->intervals[i].color = ZERO;
         
         printf("%dth Interval: %d %d\n", i, b, e);
     }
 
-    quickSort(ints, 0, ints.n-1);
-    printIntervalFamily(ints);
+    quickSort(*ints, 0, ints->n-1);
+    printIntervalFamily(*ints);
     
     //printf("G Edges = %d\n", calculateEdges(ints));
 }
 
-void printIntervalFamily(IntArray a) {
+void printIntervalFamily(IntArray* a) {
     printf("The Intervals family is:\n");
     
     for(int i = 0; i < a.n; i++) {
